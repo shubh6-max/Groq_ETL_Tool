@@ -17,8 +17,9 @@ from databricks import sql
 from groq import Groq
 
 # ============== LOAD ENVIRONMENT VARIABLES ==============
-load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+# load_dotenv()
+# GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+GROQ_API_KEY=st.secrets["GROQ_API_KEY"]
 
 # ============== INITIALIZE GROQ CLIENT ==============
 if GROQ_API_KEY is None:
