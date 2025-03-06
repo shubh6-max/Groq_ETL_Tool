@@ -1,5 +1,6 @@
 streamlit
 pandas
+tabulate
 python-dotenv
 snowflake-connector-python
 psycopg2-binary
