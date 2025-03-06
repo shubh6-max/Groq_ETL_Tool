@@ -17,7 +17,7 @@ from databricks import sql
 from groq import Groq
 
 # ============== LOAD ENVIRONMENT VARIABLES ==============
-# load_dotenv()
+load_dotenv()
 # GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GROQ_API_KEY=st.secrets["GROQ_API_KEY"]
 
@@ -382,6 +382,12 @@ elif st.session_state.page == 3:
                         user_input+" "+"and Output only the final cleaned table, with no additional text or explanation."
                     )
         
+        if transformed_df is not None:
+                st.session_state.transformed_df = transformed_df
+                st.dataframe(transformed_df)
+        else:
+            st.error("❌ Failed to parse AI response into DataFrame.")
+
         st.session_state.chat_history.append(("🧑", user_input))
         st.session_state.chat_history.append(("🤖", transformed_df))
         for role, message in st.session_state.chat_history:
@@ -398,9 +404,9 @@ elif st.session_state.page == 3:
                 raw_output, transformed_df = llm_transform_data(df, 
                     "Clean this dataset by removing duplicates or fixing missing values. Return only a Markdown table."
                 )
+            
             if transformed_df is not None:
                 st.session_state.transformed_df = transformed_df
-                st.success("✅ Cleaning Complete!")
                 st.dataframe(transformed_df)
             else:
                 st.error("❌ Failed to parse AI response into DataFrame.")
@@ -431,10 +437,16 @@ elif st.session_state.page == 3:
             else:
                 st.error("❌ No anomalies found or parse error.")
 
-     # Navigation
-    if st.button("← Previous"):
-        st.session_state.page = 2
-        st.rerun()
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("← Previous"):
+            st.session_state.page = 2
+            st.rerun()
+
+    with col2:
+        if st.button("Next →"):
+            st.session_state.page = 4
+            st.rerun()
 
     
 
@@ -443,7 +455,7 @@ elif st.session_state.page == 4:
 
     st.title("📤 Upload to Database")
 
-    st.write(st.session_state.transformed_df.head())
+    st.dataframe(st.session_state.transformed_df.head())
 
     table_name = st.text_input("Enter Table Name for Upload")
     if st.button("Upload Data to DB"):
